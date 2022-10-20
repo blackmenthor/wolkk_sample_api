@@ -54,3 +54,23 @@ class UserSerializer(serializers.ModelSerializer):
             return user
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
+
+    def validate(self, attrs):
+        data = super().validate(attrs)
+
+        refresh = self.get_token(self.user)
+        data['refresh'] = str(refresh)
+        data['access'] = str(refresh.access_token)
+
+        # Add extra responses here
+        data['id'] = self.user.id
+        data['username'] = self.user.username
+        data['first_name'] = self.user.first_name
+        data['last_name'] = self.user.last_name
+        data['email'] = self.user.email
+        return data
+
+
